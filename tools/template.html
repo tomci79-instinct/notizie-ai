@@ -1,42 +1,102 @@
 <!DOCTYPE html>
 <html lang="it"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
 <title>Le 10 notizie AI di oggi - __LABEL__</title>
+<script>
+(function(){var t=null;try{t=localStorage.getItem('aiBriefTheme')}catch(e){}
+if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
 <style>
+:root{
+  --bg:#eef1f5; --bg-grad1:#e8eef7; --bg-grad2:#f6f7f9;
+  --header-bg:linear-gradient(135deg,#101623 0%,#1b2a45 55%,#274a7c 100%);
+  --header-fg:#f4f7fb; --header-sub:#a7b8cf; --header-tab:#8ea3bd;
+  --card:#ffffff; --fg:#161a20; --muted:#5d6574; --faint:#8a9199;
+  --accent:#3b82f6; --accent-soft:#e8f1fd; --accent-border:#c4dbfa; --accent-ink:#1d4f9c;
+  --border:#e4e7ec; --foot-border:#eef0f3;
+  --star-off:#c3c9cf; --star-on:#f5a623;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 4px 16px rgba(16,24,40,.07);
+  --shadow-hover:0 2px 4px rgba(16,24,40,.06),0 10px 28px rgba(16,24,40,.12);
+}
+[data-theme="dark"]{
+  --bg:#0d1117; --bg-grad1:#0d1117; --bg-grad2:#131a24;
+  --header-bg:linear-gradient(135deg,#0a0e14 0%,#101c30 55%,#173457 100%);
+  --header-fg:#eef3fa; --header-sub:#93a5bd; --header-tab:#7e93ae;
+  --card:#161d27; --fg:#e6eaf1; --muted:#a7b1c0; --faint:#7d8794;
+  --accent:#5b9dff; --accent-soft:#152840; --accent-border:#234a72; --accent-ink:#9cc4ff;
+  --border:#26303d; --foot-border:#232c38;
+  --star-off:#55606e; --star-on:#f5a623;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+  --shadow-hover:0 2px 6px rgba(0,0,0,.45),0 12px 32px rgba(0,0,0,.5);
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f2f3f5;color:#1c1e21}
-header{background:#14171c;color:#fff;padding:22px 16px 0}
-header h1{font-size:20px;font-weight:700}
-header p.sub{color:#9aa3ad;font-size:13px;margin-top:4px}
-nav.tabs{display:flex;gap:2px;margin-top:16px;overflow-x:auto}
-nav.tabs button{background:transparent;border:none;color:#9aa3ad;font-size:14px;font-weight:600;padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
-nav.tabs button.on{color:#fff;border-bottom-color:#4c9ffe}
-main{max-width:760px;margin:0 auto;padding:18px 14px 60px}
-.card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:18px;overflow:hidden}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  background:linear-gradient(180deg,var(--bg-grad1) 0%,var(--bg-grad2) 340px,var(--bg) 100%);
+  background-color:var(--bg);color:var(--fg);min-height:100vh;
+  transition:background-color .25s ease,color .25s ease}
+header{background:var(--header-bg);color:var(--header-fg);padding:26px 18px 14px;
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 4px 18px rgba(10,16,26,.18)}
+.hrow{max-width:760px;margin:0 auto;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+header h1{font-size:21px;font-weight:750;letter-spacing:-.02em}
+header p.sub{color:var(--header-sub);font-size:13px;margin-top:5px;letter-spacing:.01em}
+#themeBtn{flex:none;margin-top:2px;width:38px;height:38px;border-radius:50%;cursor:pointer;
+  border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:var(--header-fg);
+  font-size:17px;line-height:1;display:flex;align-items:center;justify-content:center;
+  transition:background .2s ease,transform .15s ease}
+#themeBtn:hover{background:rgba(255,255,255,.18)}
+#themeBtn:active{transform:scale(.92)}
+nav.tabs{max-width:760px;margin:18px auto 0;display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{background:transparent;border:1px solid transparent;color:var(--header-tab);
+  font-size:13.5px;font-weight:600;padding:7px 13px;cursor:pointer;border-radius:999px;
+  white-space:nowrap;transition:color .15s ease,background .15s ease,border-color .15s ease}
+nav.tabs button:hover{color:var(--header-fg);background:rgba(255,255,255,.07)}
+nav.tabs button.on{color:#fff;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.28)}
+main{max-width:760px;margin:0 auto;padding:22px 14px 70px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);
+  margin-bottom:20px;overflow:hidden;transition:box-shadow .2s ease,transform .2s ease,background-color .25s ease,border-color .25s ease}
+.card:hover{box-shadow:var(--shadow-hover);transform:translateY(-1px)}
 .card img{width:100%;display:block}
-.cap{font-size:11px;color:#8a9199;padding:6px 14px 0}
-.cbody{padding:12px 14px 14px}
-.cbody h2{font-size:16px;line-height:1.35;margin-bottom:8px}
-.cbody h2 .num{color:#4c9ffe;margin-right:8px}
-.cbody p{font-size:14px;line-height:1.55;color:#3c4043}
-.cfoot{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-top:1px solid #eee}
-.cfoot a{font-size:13px;color:#4c9ffe;text-decoration:none;font-weight:600}
-.star{background:none;border:none;font-size:22px;cursor:pointer;color:#c3c9cf;line-height:1}
-.star.on{color:#f5b301}
-.dayh{font-size:15px;font-weight:700;margin:22px 0 12px;color:#14171c;border-left:4px solid #4c9ffe;padding-left:10px}
-.sech{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8a9199;margin:16px 0 10px}
-.note{background:#e8f1fd;border:1px solid #bcd6f7;border-radius:10px;padding:12px 14px;font-size:13px;color:#1c3d5a;margin-bottom:16px}
-.favbtns{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-.favbtns button,.favbtns label{background:#14171c;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer}
-.empty{color:#8a9199;font-size:14px;padding:30px 0;text-align:center}
+.cap{font-size:11px;color:var(--faint);padding:7px 16px 0;letter-spacing:.02em}
+.cbody{padding:14px 16px 14px}
+.cbody h2{font-size:16.5px;line-height:1.4;margin-bottom:8px;letter-spacing:-.01em}
+.cbody h2 .num{color:var(--accent);margin-right:8px;font-weight:800}
+.cbody p{font-size:14px;line-height:1.6;color:var(--muted)}
+.cfoot{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-top:1px solid var(--foot-border)}
+.cfoot a{font-size:13px;color:var(--accent);text-decoration:none;font-weight:650;letter-spacing:.01em}
+.cfoot a:hover{text-decoration:underline}
+.star{background:none;border:none;font-size:22px;cursor:pointer;color:var(--star-off);line-height:1;
+  padding:2px 4px;border-radius:8px;transition:color .15s ease,transform .15s ease}
+.star:hover{transform:scale(1.15)}
+.star.on{color:var(--star-on)}
+.dayh{font-size:15px;font-weight:750;margin:26px 0 12px;color:var(--fg);
+  border-left:4px solid var(--accent);padding-left:11px;letter-spacing:-.01em}
+.sech{font-size:12.5px;font-weight:750;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);margin:20px 0 12px}
+.note{background:var(--accent-soft);border:1px solid var(--accent-border);border-radius:12px;
+  padding:13px 15px;font-size:13px;line-height:1.55;color:var(--accent-ink);margin-bottom:18px}
+.favbtns{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.favbtns button,.favbtns label{background:var(--accent);color:#fff;border:none;border-radius:10px;
+  padding:10px 15px;font-size:13px;font-weight:650;cursor:pointer;transition:filter .15s ease,transform .15s ease}
+.favbtns button:hover,.favbtns label:hover{filter:brightness(1.1)}
+.favbtns button:active,.favbtns label:active{transform:scale(.97)}
+.empty{color:var(--faint);font-size:14px;padding:36px 0;text-align:center}
 input[type=file]{display:none}
 </style></head><body>
-<header><h1>Le 10 notizie AI di oggi</h1><p class="sub">__LABEL__ &middot; a cura di Instinct</p>
+<header>
+<div class="hrow"><div><h1>Le 10 notizie AI di oggi</h1><p class="sub">__LABEL__ &middot; a cura di Instinct</p></div>
+<button id="themeBtn" onclick="toggleTheme()" title="Cambia tema" aria-label="Cambia tema"></button></div>
 <nav class="tabs" id="tabs"></nav></header>
 <main id="main"></main>
 <script>
 var DATA = __DATA__;
 var FKEY = 'aiBriefFavs';
+var TKEY = 'aiBriefTheme';
+function theme(){var t=document.documentElement.getAttribute('data-theme');return t==='dark'?'dark':'light'}
+function paintThemeBtn(){document.getElementById('themeBtn').innerHTML = theme()==='dark' ? '&#9788;' : '&#9790;'}
+function toggleTheme(){var t=theme()==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem(TKEY,t)}catch(e){}paintThemeBtn()}
 function favs(){try{var f=JSON.parse(localStorage.getItem(FKEY)||'[]');
   return f.map(function(x){return typeof x==='string'?{id:x}:x})}catch(e){return[]}}
 function saveFavs(f){localStorage.setItem(FKEY,JSON.stringify(f))}
@@ -97,5 +157,6 @@ function impFavs(ev){
   var r=new FileReader();r.onload=function(){try{var p=JSON.parse(r.result);var inc=(p.favorites||[]).map(function(x){return typeof x==='string'?{id:x}:x});
     var cur=favs();inc.forEach(function(x){if(!cur.some(function(c){return c.id===x.id}))cur.push(x)});saveFavs(cur);render('preferiti')}catch(e){alert('File non valido')}};r.readAsText(ev.target.files[0]);
 }
+paintThemeBtn();
 render('ai');
 </script></body></html>
