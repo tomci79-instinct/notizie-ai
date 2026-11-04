@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le 10 notizie AI di oggi - __LABEL__</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f2f3f5;color:#1c1e21}
+header{background:#14171c;color:#fff;padding:22px 16px 0}
+header h1{font-size:20px;font-weight:700}
+header p.sub{color:#9aa3ad;font-size:13px;margin-top:4px}
+nav.tabs{display:flex;gap:2px;margin-top:16px;overflow-x:auto}
+nav.tabs button{background:transparent;border:none;color:#9aa3ad;font-size:14px;font-weight:600;padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+nav.tabs button.on{color:#fff;border-bottom-color:#4c9ffe}
+main{max-width:760px;margin:0 auto;padding:18px 14px 60px}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:18px;overflow:hidden}
+.card img{width:100%;display:block}
+.cap{font-size:11px;color:#8a9199;padding:6px 14px 0}
+.cbody{padding:12px 14px 14px}
+.cbody h2{font-size:16px;line-height:1.35;margin-bottom:8px}
+.cbody h2 .num{color:#4c9ffe;margin-right:8px}
+.cbody p{font-size:14px;line-height:1.55;color:#3c4043}
+.cfoot{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-top:1px solid #eee}
+.cfoot a{font-size:13px;color:#4c9ffe;text-decoration:none;font-weight:600}
+.star{background:none;border:none;font-size:22px;cursor:pointer;color:#c3c9cf;line-height:1}
+.star.on{color:#f5b301}
+.dayh{font-size:15px;font-weight:700;margin:22px 0 12px;color:#14171c;border-left:4px solid #4c9ffe;padding-left:10px}
+.sech{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8a9199;margin:16px 0 10px}
+.note{background:#e8f1fd;border:1px solid #bcd6f7;border-radius:10px;padding:12px 14px;font-size:13px;color:#1c3d5a;margin-bottom:16px}
+.favbtns{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.favbtns button,.favbtns label{background:#14171c;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer}
+.empty{color:#8a9199;font-size:14px;padding:30px 0;text-align:center}
+input[type=file]{display:none}
+</style></head><body>
+<header><h1>Le 10 notizie AI di oggi</h1><p class="sub">__LABEL__ &middot; a cura di Instinct</p>
+<nav class="tabs" id="tabs"></nav></header>
+<main id="main"></main>
+<script>
+var DATA = __DATA__;
+var FKEY = 'aiBriefFavs';
+function favs(){try{var f=JSON.parse(localStorage.getItem(FKEY)||'[]');
+  return f.map(function(x){return typeof x==='string'?{id:x}:x})}catch(e){return[]}}
+function saveFavs(f){localStorage.setItem(FKEY,JSON.stringify(f))}
+function isFav(id){return favs().some(function(x){return x.id===id})}
+function findItem(id){var r=null;[DATA.today].concat(DATA.archive).forEach(function(d){d.sections.forEach(function(s){s.items.forEach(function(it){if(it.id===id)r={it:it,d:d,s:s}})})});return r}
+function toggleFav(id){var f=favs();var i=f.findIndex(function(x){return x.id===id});
+  if(i>=0)f.splice(i,1);else{var r=findItem(id);f.push({id:id,t:r?r.it.t:'',u:r?r.it.u:'',s:r?r.it.s:'',date:r?r.d.date:'',sec:r?DATA.secnames[r.s.id]:''});}
+  saveFavs(f);render(curTab)}
+var TABS=[['ai','AI'],['creative','Creativita AI'],['videotech','Video Tech'],['streaming','Video Streaming'],['archivio','Archivio'],['preferiti','Preferiti']];
+var curTab='ai';
+function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+function card(it,num){
+  var img = it.img_jpeg_b64 ? '<img src="data:image/jpeg;base64,'+it.img_jpeg_b64+'" alt="">' : '';
+  var cap = it.img_jpeg_b64 && it.imgattr ? '<div class="cap">'+esc(it.imgattr)+'</div>' : '';
+  var noimg = it.img_jpeg_b64 ? '' : '<div class="cap">(Immagine non disponibile dalla fonte)</div>';
+  return '<div class="card">'+img+cap+noimg+
+    '<div class="cbody"><h2><span class="num">'+num+'.</span>'+esc(it.t)+'</h2><p>'+esc(it.b)+'</p></div>'+
+    '<div class="cfoot"><a href="'+it.u+'" target="_blank" rel="noopener">'+esc(it.s)+' &rarr;</a>'+
+    '<button class="star'+(isFav(it.id)?' on':'')+'" onclick="toggleFav(\''+it.id+'\')" title="Preferito">'+(isFav(it.id)?'&#9733;':'&#9734;')+'</button></div></div>';
+}
+function render(tab){
+  curTab=tab;
+  var tb=document.getElementById('tabs');tb.innerHTML='';
+  TABS.forEach(function(t){var b=document.createElement('button');b.textContent=t[1];if(t[0]===tab)b.className='on';b.onclick=function(){render(t[0])};tb.appendChild(b)});
+  var m=document.getElementById('main');
+  if(tab==='archivio'){
+    if(!DATA.archive.length){m.innerHTML='<div class="empty">Nessun numero precedente.</div>';return}
+    var h='';
+    DATA.archive.forEach(function(d){
+      h+='<div class="dayh">'+esc(d.label)+'</div>';
+      d.sections.forEach(function(s){h+='<div class="sech">'+DATA.secnames[s.id]+'</div>';
+        s.items.forEach(function(it,i){h+=card(it,i+1)})});
+    });
+    m.innerHTML=h;return;
+  }
+  if(tab==='preferiti'){
+    var f=favs();
+    var h='<div class="note">I preferiti sono salvati in questo browser e restano tra un aggiornamento e l\'altro. Puoi esportarli in JSON come backup e reimportarli su un altro dispositivo.</div>';
+    h+='<div class="favbtns"><button onclick="expFavs()">Esporta preferiti (JSON)</button><label>Importa preferiti<input type="file" id="imp" accept="application/json" onchange="impFavs(event)"></label></div>';
+    if(!f.length)h+='<div class="empty">Nessun preferito. Tocca la stella su una notizia per aggiungerla qui.</div>';
+    f.forEach(function(x){
+      var r=findItem(x.id);
+      if(r)h+='<div class="dayh">'+esc(r.d.label)+' &middot; '+DATA.secnames[r.s.id]+'</div>'+card(r.it,1);
+      else h+='<div class="card"><div class="cbody"><h2>'+esc(x.t)+'</h2><p>'+esc(x.date||'')+(x.sec?' &middot; '+esc(x.sec):'')+'</p></div><div class="cfoot"><a href="'+x.u+'" target="_blank" rel="noopener">'+esc(x.s||'Fonte')+' &rarr;</a><button class="star on" onclick="toggleFav(\''+x.id+'\')">&#9733;</button></div></div>';
+    });
+    m.innerHTML=h;return;
+  }
+  var h='<div class="sech">'+DATA.secnames[tab]+' &middot; '+esc(DATA.today.label)+'</div>';
+  DATA.today.sections.forEach(function(s){if(s.id===tab)s.items.forEach(function(it,i){h+=card(it,i+1)})});
+  m.innerHTML=h;
+}
+function expFavs(){
+  var payload={exported:new Date().toISOString(),favorites:favs()};
+  var a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(payload,null,1));
+  a.download='preferiti-notizie-ai.json';a.click();
+}
+function impFavs(ev){
+  var r=new FileReader();r.onload=function(){try{var p=JSON.parse(r.result);var inc=(p.favorites||[]).map(function(x){return typeof x==='string'?{id:x}:x});
+    var cur=favs();inc.forEach(function(x){if(!cur.some(function(c){return c.id===x.id}))cur.push(x)});saveFavs(cur);render('preferiti')}catch(e){alert('File non valido')}};r.readAsText(ev.target.files[0]);
+}
+render('ai');
+</script></body></html>
